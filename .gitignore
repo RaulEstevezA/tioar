@@ -97,3 +97,12 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Unity project inside TioAR folder
+/TioAR/Library/
+/TioAR/Temp/
+/TioAR/Obj/
+/TioAR/Build/
+/TioAR/Builds/
+/TioAR/Logs/
+/TioAR/UserSettings/
