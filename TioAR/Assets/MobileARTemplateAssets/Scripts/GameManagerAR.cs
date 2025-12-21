@@ -1,42 +1,72 @@
 using UnityEngine;
+using TMPro;
 using System.Collections;
 
 public class GameManagerAR : MonoBehaviour
 {
+    [Header("Prefab")]
     public GameObject tioPrefab;
-    public float roundTime = 10f;
 
-    private GameObject currentTio;
+    [Header("UI")]
+    public TMP_Text timeText;
+    public TMP_Text scoreText;
+    public SearchMessage searchMessage;
+
+    [Header("Rounds")]
+    public float[] roundTimes = { 20f, 15f, 10f };
+
+    private int currentRound = 0;
+    private float timeLeft;
     private int score = 0;
     private bool roundActive = false;
 
+    private GameObject currentTio;
+
     void Start()
     {
-        StartCoroutine(StartRound());
+        StartCoroutine(RoundLoop());
     }
 
-    IEnumerator StartRound()
+    IEnumerator RoundLoop()
     {
-        // esperamos a que termine el mensaje "Busca al Tió"
-        yield return new WaitForSeconds(5f);
+        while (currentRound < roundTimes.Length)
+        {
+            // 1️⃣ mensaje "Busca al Tió" (NO cuenta tiempo)
+            yield return StartCoroutine(searchMessage.ShowMessage());
 
-        SpawnTio();
-        roundActive = true;
+            // 2️⃣ spawn del Tió en posición aleatoria
+            SpawnTio();
 
-        yield return new WaitForSeconds(roundTime);
-        EndRound();
+            // 3️⃣ iniciar ronda
+            timeLeft = roundTimes[currentRound];
+            roundActive = true;
+
+            while (timeLeft > 0f)
+            {
+                timeLeft -= Time.deltaTime;
+                UpdateUI();
+                yield return null;
+            }
+
+            // 4️⃣ fin de ronda
+            roundActive = false;
+
+            if (currentTio != null)
+                Destroy(currentTio);
+
+            currentRound++;
+        }
+
+        EndGame();
     }
 
     void SpawnTio()
     {
-        if (tioPrefab == null)
-        {
-            Debug.LogError("Tio Prefab no asignado en GameManagerAR");
-            return;
-        }
+        Vector3 randomOffset =
+            Camera.main.transform.forward * Random.Range(4f, 6f) +
+            Camera.main.transform.right * Random.Range(-2f, 2f);
 
-        Vector3 spawnPos = Camera.main.transform.position
-                         + Camera.main.transform.forward * 6f;
+        Vector3 spawnPos = Camera.main.transform.position + randomOffset;
 
         currentTio = Instantiate(tioPrefab, spawnPos, Quaternion.identity);
     }
@@ -46,12 +76,23 @@ public class GameManagerAR : MonoBehaviour
         if (!roundActive) return;
 
         score++;
-        Debug.Log("Puntos: " + score);
+        UpdateUI();
     }
 
-    void EndRound()
+    void UpdateUI()
     {
-        roundActive = false;
-        Debug.Log("Ronda terminada. Puntos finales: " + score);
+        if (timeText != null)
+            timeText.text = "TIEMPO: " + Mathf.CeilToInt(timeLeft);
+
+        if (scoreText != null)
+            scoreText.text = "PUNTOS: " + score;
+    }
+
+    void EndGame()
+    {
+        if (timeText != null)
+            timeText.text = "FIN";
+
+        Debug.Log("Juego terminado. Puntuación total: " + score);
     }
 }
