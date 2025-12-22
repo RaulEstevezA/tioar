@@ -4,6 +4,10 @@ using System.Collections;
 
 public class GameManagerAR : MonoBehaviour
 {
+    [Header("End Screen")]
+    public GameObject endPanel;
+    public TMP_Text finalScoreText;
+
     [Header("Prefab")]
     public GameObject tioPrefab;
 
@@ -13,7 +17,7 @@ public class GameManagerAR : MonoBehaviour
     public SearchMessage searchMessage;
 
     [Header("Rounds")]
-    public float[] roundTimes = { 20f, 15f, 10f };
+    public float[] roundTimes = { 15f, 10f, 5f };
 
     private int currentRound = 0;
     private float timeLeft;
@@ -90,9 +94,38 @@ public class GameManagerAR : MonoBehaviour
 
     void EndGame()
     {
-        if (timeText != null)
-            timeText.text = "FIN";
+        // ocultar HUD
+        if (timeText != null) timeText.gameObject.SetActive(false);
+        if (scoreText != null) scoreText.gameObject.SetActive(false);
 
-        Debug.Log("Juego terminado. Puntuación total: " + score);
+        // mostrar pantalla final
+        endPanel.SetActive(true);
+
+        // mostrar puntuación final
+        finalScoreText.text = "PUNTUACIÓN FINAL\n" + score;
+    }
+
+    public void RestartGame()
+    {
+        StopAllCoroutines();
+
+        // reset valores
+        currentRound = 0;
+        score = 0;
+        roundActive = false;
+
+        // reset UI
+        scoreText.text = "PUNTOS: 0";
+        timeText.text = "";
+        scoreText.gameObject.SetActive(true);
+        timeText.gameObject.SetActive(true);
+
+        endPanel.SetActive(false);
+
+        // destruir tio si existe
+        if (currentTio != null)
+            Destroy(currentTio);
+
+        StartCoroutine(RoundLoop());
     }
 }
