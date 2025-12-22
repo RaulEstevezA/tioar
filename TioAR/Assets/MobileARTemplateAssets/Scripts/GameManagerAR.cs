@@ -4,6 +4,9 @@ using System.Collections;
 
 public class GameManagerAR : MonoBehaviour
 {
+    [Header("Panels")]
+    public GameObject startPanel;
+
     [Header("End Screen")]
     public GameObject endPanel;
     public TMP_Text finalScoreText;
@@ -17,7 +20,7 @@ public class GameManagerAR : MonoBehaviour
     public SearchMessage searchMessage;
 
     [Header("Rounds")]
-    public float[] roundTimes = { 15f, 10f, 5f };
+    public float[] roundTimes = { 10f, 8f, 4f };
 
     private int currentRound = 0;
     private float timeLeft;
@@ -26,8 +29,18 @@ public class GameManagerAR : MonoBehaviour
 
     private GameObject currentTio;
 
-    void Start()
+
+    public void StartGame()
     {
+        startPanel.SetActive(false);
+
+        currentRound = 0;
+        score = 0;
+
+        if (timeText != null) timeText.gameObject.SetActive(true);
+        if (scoreText != null) scoreText.gameObject.SetActive(true);
+
+        UpdateUI();
         StartCoroutine(RoundLoop());
     }
 
@@ -109,20 +122,24 @@ public class GameManagerAR : MonoBehaviour
     {
         StopAllCoroutines();
 
-        // reset valores
         currentRound = 0;
         score = 0;
         roundActive = false;
 
-        // reset UI
-        scoreText.text = "PUNTOS: 0";
-        timeText.text = "";
-        scoreText.gameObject.SetActive(true);
-        timeText.gameObject.SetActive(true);
+        if (timeText != null)
+        {
+            timeText.gameObject.SetActive(true);
+            timeText.text = "";
+        }
+
+        if (scoreText != null)
+        {
+            scoreText.gameObject.SetActive(true);
+            scoreText.text = "PUNTOS: 0";
+        }
 
         endPanel.SetActive(false);
 
-        // destruir tio si existe
         if (currentTio != null)
             Destroy(currentTio);
 
