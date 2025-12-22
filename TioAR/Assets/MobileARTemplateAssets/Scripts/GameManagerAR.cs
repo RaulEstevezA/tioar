@@ -20,7 +20,7 @@ public class GameManagerAR : MonoBehaviour
     public SearchMessage searchMessage;
 
     [Header("Rounds")]
-    public float[] roundTimes = { 10f, 8f, 4f };
+    public float[] roundTimes = { 8f, 6f, 4f };
 
     private int currentRound = 0;
     private float timeLeft;
@@ -30,6 +30,18 @@ public class GameManagerAR : MonoBehaviour
     private GameObject currentTio;
 
 
+    void Awake()
+    {
+        // ocultar textos al inicio
+        if (timeText != null) timeText.gameObject.SetActive(false);
+        if (scoreText != null) scoreText.gameObject.SetActive(false);
+        if (searchMessage != null) searchMessage.gameObject.SetActive(false);
+
+        // asegurar paneles
+        if (startPanel != null) startPanel.SetActive(true);
+        if (endPanel != null) endPanel.SetActive(false);
+    }
+
     public void StartGame()
     {
         startPanel.SetActive(false);
@@ -37,8 +49,10 @@ public class GameManagerAR : MonoBehaviour
         currentRound = 0;
         score = 0;
 
+        // mostrar HUD
         if (timeText != null) timeText.gameObject.SetActive(true);
         if (scoreText != null) scoreText.gameObject.SetActive(true);
+        if (searchMessage != null) searchMessage.gameObject.SetActive(true);
 
         UpdateUI();
         StartCoroutine(RoundLoop());
@@ -137,6 +151,9 @@ public class GameManagerAR : MonoBehaviour
             scoreText.gameObject.SetActive(true);
             scoreText.text = "PUNTOS: 0";
         }
+
+        if (searchMessage != null)
+            searchMessage.gameObject.SetActive(true);
 
         endPanel.SetActive(false);
 
