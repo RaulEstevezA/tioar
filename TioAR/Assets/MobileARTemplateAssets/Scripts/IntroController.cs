@@ -16,7 +16,12 @@ public class IntroController : MonoBehaviour
 
     void Start()
     {
+        // intro visible al inicio
+        introPanel.SetActive(true);
+
+        // start panel oculto hasta que acabe la intro
         startPanel.SetActive(false);
+
         StartCoroutine(IntroSequence());
     }
 

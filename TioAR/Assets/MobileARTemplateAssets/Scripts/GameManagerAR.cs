@@ -22,6 +22,9 @@ public class GameManagerAR : MonoBehaviour
     [Header("Rounds")]
     public float[] roundTimes = { 8f, 6f, 4f };
 
+    [Header("Music")]
+    public GameObject gameMusic;
+
     private int currentRound = 0;
     private float timeLeft;
     private int score = 0;
@@ -45,6 +48,9 @@ public class GameManagerAR : MonoBehaviour
     public void StartGame()
     {
         startPanel.SetActive(false);
+
+        if (gameMusic != null)
+            gameMusic.SetActive(true);
 
         currentRound = 0;
         score = 0;
@@ -121,6 +127,9 @@ public class GameManagerAR : MonoBehaviour
 
     void EndGame()
     {
+
+        if (gameMusic != null)
+            gameMusic.SetActive(false);
         // ocultar HUD
         if (timeText != null) timeText.gameObject.SetActive(false);
         if (scoreText != null) scoreText.gameObject.SetActive(false);
@@ -139,6 +148,9 @@ public class GameManagerAR : MonoBehaviour
         currentRound = 0;
         score = 0;
         roundActive = false;
+
+        if (gameMusic != null)
+            gameMusic.SetActive(true);
 
         if (timeText != null)
         {
