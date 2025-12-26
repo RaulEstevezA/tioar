@@ -22,6 +22,12 @@ public class GameManagerAR : MonoBehaviour
     [Header("Rounds")]
     public float[] roundTimes = { 8f, 6f, 4f };
 
+    [Header("Music")]
+    public GameObject gameMusic;
+
+    [Header("Messages")]
+    public TimedMessage hitMessage;
+
     private int currentRound = 0;
     private float timeLeft;
     private int score = 0;
@@ -46,6 +52,9 @@ public class GameManagerAR : MonoBehaviour
     {
         startPanel.SetActive(false);
 
+        if (gameMusic != null)
+            gameMusic.SetActive(true);
+
         currentRound = 0;
         score = 0;
 
@@ -58,38 +67,42 @@ public class GameManagerAR : MonoBehaviour
         StartCoroutine(RoundLoop());
     }
 
-    IEnumerator RoundLoop()
+IEnumerator RoundLoop()
+{
+    while (currentRound < roundTimes.Length)
     {
-        while (currentRound < roundTimes.Length)
+        // mensaje "Busca al Tió" (NO cuenta tiempo)
+        yield return StartCoroutine(searchMessage.ShowMessage());
+
+        // spawn del Tió en posición aleatoria
+        SpawnTio();
+
+        // bis — mensaje "Golpea al Tió"
+        if (hitMessage != null)
+            yield return StartCoroutine(hitMessage.Show());
+
+        // iniciar ronda
+        timeLeft = roundTimes[currentRound];
+        roundActive = true;
+
+        while (timeLeft > 0f)
         {
-            // 1️⃣ mensaje "Busca al Tió" (NO cuenta tiempo)
-            yield return StartCoroutine(searchMessage.ShowMessage());
-
-            // 2️⃣ spawn del Tió en posición aleatoria
-            SpawnTio();
-
-            // 3️⃣ iniciar ronda
-            timeLeft = roundTimes[currentRound];
-            roundActive = true;
-
-            while (timeLeft > 0f)
-            {
-                timeLeft -= Time.deltaTime;
-                UpdateUI();
-                yield return null;
-            }
-
-            // 4️⃣ fin de ronda
-            roundActive = false;
-
-            if (currentTio != null)
-                Destroy(currentTio);
-
-            currentRound++;
+            timeLeft -= Time.deltaTime;
+            UpdateUI();
+            yield return null;
         }
 
-        EndGame();
+        // fin de ronda
+        roundActive = false;
+
+        if (currentTio != null)
+            Destroy(currentTio);
+
+        currentRound++;
     }
+
+    EndGame();
+}
 
     void SpawnTio()
     {
@@ -121,6 +134,9 @@ public class GameManagerAR : MonoBehaviour
 
     void EndGame()
     {
+
+        if (gameMusic != null)
+            gameMusic.SetActive(false);
         // ocultar HUD
         if (timeText != null) timeText.gameObject.SetActive(false);
         if (scoreText != null) scoreText.gameObject.SetActive(false);
@@ -139,6 +155,9 @@ public class GameManagerAR : MonoBehaviour
         currentRound = 0;
         score = 0;
         roundActive = false;
+
+        if (gameMusic != null)
+            gameMusic.SetActive(true);
 
         if (timeText != null)
         {
