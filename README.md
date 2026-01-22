@@ -7,7 +7,7 @@
 **Tio AR** is a mobile Augmented Reality (AR) mini-game developed with **Unity 6** using **XR / AR Foundation**.  
 Players must locate the **Tió** in their real environment and hit it as many times as possible before the round timer ends.
 
-This repository is presented as an academic project developed by the **UOC Gamers** team.
+This repository is presented as an **academic project** developed for the **DAM program** at the **Universitat Oberta de Catalunya (UOC)** by the **UOC Gamers** team.
 
 ---
 
